@@ -25,7 +25,7 @@ Usage:
 
 Once extracted:
 
-% extract_strava ./databases/strava .
+% go run extract_strava ./databases/strava .
 
 
 Using on other platforms:
