@@ -41,8 +41,10 @@ These commands will fetch all dependencies and compile the extract_strava binary
 Usage:
 ======
 
-Once the tool has been built and the database extracted:
+Once the tool has been built and the database extracted, you may run the tool:
 
     % ./extract_strava ./databases/strava .
+
+extract_strava will dump out one TCX file per ride found in the database. Rides are normally purged from the database after a successful upload, so this should only output what you need to manually upload yourself to Strava via the web interface.
 
 
