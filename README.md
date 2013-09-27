@@ -28,7 +28,9 @@ Look at the bin/ directory. It contains pre-built 64-bit binaries for Mac OS X a
 Building extract_strava:
 ========================
 
-This will fetch all dependencies and compile the extract_strava binary.
+Go 1.1 is required for building. Download from https://code.google.com/p/go/downloads/list
+
+These commands will fetch all dependencies and compile the extract_strava binary.
 
     % export GOPATH=.
     % go get github.com/jmoiron/sqlx
