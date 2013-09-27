@@ -20,6 +20,7 @@ import (
 )
 
 var (
+	// cache the loaded TCX template
 	tcxTemplate = loadTemplate("tcx.tmpl")
 )
 
@@ -54,7 +55,7 @@ func (w *Waypoint) TimeString() string {
 	return t.Format(time.RFC3339)
 }
 
-// TemplateContext
+// TemplateContext has the fields to be sent to the TCX template.
 type TemplateContext struct {
 	StartTime string
 	Waypoints []Waypoint
@@ -93,7 +94,7 @@ func readWaypoints(path string) (waypoints []Waypoint, err error) {
 	return
 }
 
-// saveRide saves a series of waypoints to a TCX file at outPath.
+// saveRide saves a series of waypoints representing a single ride to a TCX file at outPath.
 func saveRide(waypoints []Waypoint, outPath string) error {
 	log.Printf("Saving %d waypoints to %s", len(waypoints), outPath)
 	context := &TemplateContext{
@@ -109,6 +110,7 @@ func saveRide(waypoints []Waypoint, outPath string) error {
 	return tcxTemplate.ExecuteTemplate(f, "tcx.tmpl", context)
 }
 
+// exportWaypoints takes a series of waypoints, splits them, then dumps the resulting TCX files into a directory.
 func exportWaypoints(waypoints []Waypoint, outDirectory string) (outPaths []string, err error) {
 	ride := make([]Waypoint, 0)
 	last := Waypoint{}
