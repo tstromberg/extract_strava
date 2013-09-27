@@ -9,23 +9,21 @@ Dumping your database:
 ======================
 Assuming you already have root access to your Android device and the "adb" command installed:
 
-// % adb shell
-// % > su
-// % > chmod 775 /data/data; chmod -R 775 /data/data/com.strava
-//
-// % mkdir com.strava && cd com.strava
-// % adb pull /data/data/com.strava
-// % adb shell
-// % > su
-// % > chmod 771 /data/data; chmod -R 771 /data/data/com.strava
-
+    % mkdir com.strava && cd com.strava
+    % adb shell
+    % > su
+    % > chmod 775 /data/data; chmod -R 775 /data/data/com.strava
+    % adb pull /data/data/com.strava
+    % adb shell
+    % > su
+    % > chmod 771 /data/data; chmod -R 771 /data/data/com.strava
 
 Usage:
 ======
 
 Once extracted:
 
-% go run extract_strava ./databases/strava .
+    % go run extract_strava ./databases/strava .
 
 
 Using on other platforms:
