@@ -9,6 +9,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
@@ -25,23 +26,24 @@ var (
 )
 
 // Waypoint maps to the "waypoints" table in the strava database.
+// Unused fields are commented out.
 type Waypoint struct {
-	RideId    string `db:"ride_id"`
-	Pos       int    `db:"pos"`
-	Timestamp int    `db:"timestamp"`
+	RideId string `db:"ride_id"`
+	// Pos       int    `db:"pos"`
+	Timestamp int `db:"timestamp"`
 	// Yes, this is misspelled in the db
-	Latitude    float64 `db:"latiude"`
-	Longitude   float64 `db:"longitude"`
-	Altitude    float64 `db:"altitude"`
-	HAccuracy   float64 `db:"h_accuracy"`
-	VAccuracy   float64 `db:"v_accuracy"`
-	Command     string  `db:"command"`
-	Speed       float64 `db:"speed"`
-	Bearing     float64 `db:"bearing"`
-	DeviceTime  int     `db:"device_time"`
-	Filtered    int     `db:"filtered"`
-	ElapsedTime int     `db:"elapsed_time"`
-	Distance    float64 `db:"distance"`
+	Latitude  float64 `db:"latiude"`
+	Longitude float64 `db:"longitude"`
+	Altitude  float64 `db:"altitude"`
+	// HAccuracy   float64 `db:"h_accuracy"`
+	// VAccuracy   float64 `db:"v_accuracy"`
+	// Command     string  `db:"command"`
+	// Speed       float64 `db:"speed"`
+	// Bearing     float64 `db:"bearing"`
+	// DeviceTime  int     `db:"device_time"`
+	// Filtered    int     `db:"filtered"`
+	// ElapsedTime int     `db:"elapsed_time"`
+	// Distance    float64 `db:"distance"`
 }
 
 // Waypoint.ExportFilename returns a usable Export filename for a waypoint.
@@ -79,7 +81,9 @@ func readWaypoints(path string) (waypoints []Waypoint, err error) {
 	}
 	defer db.Close()
 
-	rows, err := db.Queryx("select * FROM waypoints")
+	// Avoid "SELECT *", as mismatches between the rows returned and
+	// the Waypoint struct will cause problems for us in the future.
+	rows, err := db.Queryx("SELECT ride_id, timestamp, latiude, longitude, altitude FROM waypoints")
 	if err != nil {
 		return nil, err
 	}
@@ -116,6 +120,10 @@ func exportWaypoints(waypoints []Waypoint, outDirectory string) (outPaths []stri
 	last := Waypoint{}
 
 	for _, waypoint := range waypoints {
+		if waypoint.RideId == "" {
+			return nil, errors.New("No RideId found. The waypoints scheme has probably changed.")
+		}
+
 		if waypoint.RideId != last.RideId {
 			if last.RideId != "" {
 				outPath := path.Join(outDirectory, last.ExportFilename())
@@ -147,13 +155,13 @@ func main() {
 
 	waypoints, err := readWaypoints(os.Args[1])
 	if err != nil {
-		log.Fatal("Error reading waypoints: %s", err)
+		log.Fatalf("Error reading waypoints: %s", err)
 	}
 	log.Printf("%d records found", len(waypoints))
 
 	files, err := exportWaypoints(waypoints, os.Args[2])
 	if err != nil {
-		log.Fatal("Error exporting waypoints: %s", err)
+		log.Fatalf("Error exporting waypoints: %s", err)
 	}
 	log.Printf("Files written: %s", files)
 }
